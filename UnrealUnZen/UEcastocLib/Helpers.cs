@@ -49,6 +49,46 @@ namespace UEcastocLib
             }
         }
 
+        private const int Gigabyte = 1073741824;
+
+        public static void EncryptFileWithAES(string filePath, byte[] aesKey, int numberOfBytesToWorkOnAtATime = Gigabyte)
+        {
+            using (FileStream streamIn = File.Open(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
+            {
+                using (FileStream streamOut = File.Open(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
+                {
+                    EncryptWithAES(streamIn, streamOut, aesKey, numberOfBytesToWorkOnAtATime);
+                }
+            }
+        }
+        
+        public static void EncryptWithAES(Stream streamIn, Stream streamOut, byte[] aesKey, int numberOfBytesToWorkOnAtATime = Gigabyte)
+        {
+            using (Aes aes = Aes.Create())
+            {
+                aes.Key = aesKey;
+                aes.Mode = CipherMode.ECB;
+                aes.Padding = PaddingMode.None;
+
+                using (ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV))
+                {
+                    CryptoStream EncryptionStream = new CryptoStream(streamOut, encryptor, CryptoStreamMode.Write);
+
+                    byte[] buffer = new byte[numberOfBytesToWorkOnAtATime];
+                    long bytesWrittenTotal = 0;
+                    long totalLengthOfInputStream = streamIn.Length;
+
+                    //Read from the input file, then encrypt and write to the output file.
+                    while (bytesWrittenTotal < totalLengthOfInputStream)
+                    {
+                        int totalNumberOfBytesRead = streamIn.Read(buffer, 0, numberOfBytesToWorkOnAtATime);
+                        EncryptionStream.Write(buffer, 0, totalNumberOfBytesRead);
+                        bytesWrittenTotal += totalNumberOfBytesRead;
+                    }
+                }
+            }
+        }
+
         public static byte[] HexStringToByteArray(string hexString)
         {
             if (hexString.StartsWith("0x", StringComparison.OrdinalIgnoreCase))

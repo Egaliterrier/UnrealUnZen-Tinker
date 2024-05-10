@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainTool));
             this.OpenTocBTN = new System.Windows.Forms.Button();
             this.UnpackBTN = new System.Windows.Forms.Button();
             this.ArchiveViewTV = new System.Windows.Forms.TreeView();
@@ -48,15 +47,15 @@
             this.MountPointTXB = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
             this.RegexUnpack = new System.Windows.Forms.TextBox();
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.HelpFilter = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
             this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
             this.dontUseItIfYouDontKnowHowWorksToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.saveManifestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fixManifestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.repackUsingCustomManifestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.HelpFilter = new System.Windows.Forms.Button();
-            this.label4 = new System.Windows.Forms.Label();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -238,15 +237,24 @@
             this.RegexUnpack.Size = new System.Drawing.Size(281, 20);
             this.RegexUnpack.TabIndex = 22;
             // 
-            // toolStrip1
+            // HelpFilter
             // 
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripDropDownButton1});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(428, 25);
-            this.toolStrip1.TabIndex = 24;
-            this.toolStrip1.Text = "toolStrip1";
+            this.HelpFilter.Location = new System.Drawing.Point(391, 576);
+            this.HelpFilter.Name = "HelpFilter";
+            this.HelpFilter.Size = new System.Drawing.Size(25, 23);
+            this.HelpFilter.TabIndex = 25;
+            this.HelpFilter.Text = "?";
+            this.HelpFilter.UseVisualStyleBackColor = true;
+            this.HelpFilter.Click += new System.EventHandler(this.HelpFilter_Click);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(319, 151);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(36, 13);
+            this.label4.TabIndex = 8;
+            this.label4.Text = "Tools:";
             // 
             // toolStripDropDownButton1
             // 
@@ -257,7 +265,6 @@
             this.saveManifestToolStripMenuItem,
             this.fixManifestToolStripMenuItem,
             this.repackUsingCustomManifestToolStripMenuItem});
-            this.toolStripDropDownButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton1.Image")));
             this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
             this.toolStripDropDownButton1.Size = new System.Drawing.Size(66, 22);
@@ -299,30 +306,20 @@
             this.repackUsingCustomManifestToolStripMenuItem.Text = "Repack Custom Manifest";
             this.repackUsingCustomManifestToolStripMenuItem.Click += new System.EventHandler(this.repackUsingCustomManifestToolStripMenuItem_Click);
             // 
-            // HelpFilter
+            // toolStrip1
             // 
-            this.HelpFilter.Location = new System.Drawing.Point(391, 576);
-            this.HelpFilter.Name = "HelpFilter";
-            this.HelpFilter.Size = new System.Drawing.Size(25, 23);
-            this.HelpFilter.TabIndex = 25;
-            this.HelpFilter.Text = "?";
-            this.HelpFilter.UseVisualStyleBackColor = true;
-            this.HelpFilter.Click += new System.EventHandler(this.HelpFilter_Click);
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(319, 151);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(36, 13);
-            this.label4.TabIndex = 8;
-            this.label4.Text = "Tools:";
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripDropDownButton1});
+            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.Size = new System.Drawing.Size(428, 25);
+            this.toolStrip1.TabIndex = 24;
+            this.toolStrip1.Text = "toolStrip1";
             // 
             // MainTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(428, 615);
             this.Controls.Add(this.HelpFilter);
             this.Controls.Add(this.toolStrip1);
@@ -346,6 +343,7 @@
             this.Controls.Add(this.ArchiveViewTV);
             this.Controls.Add(this.UnpackBTN);
             this.Controls.Add(this.OpenTocBTN);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "MainTool";
@@ -379,15 +377,15 @@
         private System.Windows.Forms.TextBox MountPointTXB;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.TextBox RegexUnpack;
-        private System.Windows.Forms.ToolStrip toolStrip1;
+        private System.Windows.Forms.Button HelpFilter;
+        private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton1;
+        private System.Windows.Forms.ToolStripMenuItem dontUseItIfYouDontKnowHowWorksToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem saveManifestToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem fixManifestToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem repackUsingCustomManifestToolStripMenuItem;
-        private System.Windows.Forms.Button HelpFilter;
-        private System.Windows.Forms.ToolStripMenuItem dontUseItIfYouDontKnowHowWorksToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.ToolStrip toolStrip1;
     }
 }
 

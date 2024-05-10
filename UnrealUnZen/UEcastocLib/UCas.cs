@@ -7,6 +7,22 @@ namespace UEcastocLib
 {
     public static class UCasDataParser
     {
+        public class FileUnpackedEventArguments
+        {
+            public string CurrentFilePath;
+            public int CurrentFileNumber;
+            public int TotalFilesNumber;
+            public ulong FilesUnpackedSize;
+            public ulong AllFilesSize;
+        }
+
+        public delegate void FileUnpackedDelegate(FileUnpackedEventArguments fileUnpackedEventArguments);
+        public delegate void FinishedUnpackingDelegate(int filesUnpacked);
+
+
+        public static event FileUnpackedDelegate FileUnpacked;
+        public static event FinishedUnpackingDelegate FinishedUnpacking;
+
         private static void UnpackFile(UTocData utoc, GameFileMetaData fdata, List<byte[]> blockData, string outDir)
         {
             Directory.CreateDirectory(outDir);
@@ -82,16 +98,19 @@ namespace UEcastocLib
         {
             outDir += utoc.MountPoint;
             int filesUnpacked = 0;
+            ulong filesUnpackedSize = 0;
+            ulong allFilesSizeTotal = 0;
 
             using (FileStream openUcas = File.OpenRead(ucasPath))
             {
                 List<GameFileMetaData> filesToUnpack = MatchFilter(utoc, filter);
 
-                foreach (var v in filesToUnpack)
+                allFilesSizeTotal = GetAllFilesSize(filesToUnpack);
+                foreach (var currentFileToUnpack in filesToUnpack)
                 {
                     List<byte[]> compressionBlockData = new List<byte[]>();
 
-                    foreach (var b in v.CompressionBlocks)
+                    foreach (var b in currentFileToUnpack.CompressionBlocks)
                     {
                         openUcas.Seek((long)b.GetOffset(), SeekOrigin.Begin);
                         byte[] buf = new byte[utoc.IsEncrypted() ? Helpers.Align(b.GetCompressedSize(), 16) : b.GetCompressedSize()];
@@ -113,12 +132,35 @@ namespace UEcastocLib
                         compressionBlockData.Add(buf);
                     }
 
-                    UnpackFile(utoc, v, compressionBlockData, outDir);
+                    UnpackFile(utoc, currentFileToUnpack, compressionBlockData, outDir);
                     filesUnpacked++;
+                    filesUnpackedSize += currentFileToUnpack.OffLen.GetLength();
+
+                    FileUnpacked?.Invoke(new FileUnpackedEventArguments
+                    {
+                        CurrentFilePath = currentFileToUnpack.FilePath,
+                        CurrentFileNumber = filesUnpacked,
+                        TotalFilesNumber = filesToUnpack.Count,
+                        FilesUnpackedSize = filesUnpackedSize,
+                        AllFilesSize = allFilesSizeTotal
+                    });
                 }
             }
 
+            FinishedUnpacking?.Invoke(filesUnpacked);
+
             return filesUnpacked;
+        }
+
+        public static ulong GetAllFilesSize(List<GameFileMetaData> files)
+        {
+            ulong allFilesSize = 0;
+            foreach (var FileMetaData in files)
+            {
+                allFilesSize += FileMetaData.OffLen.GetLength();
+            }
+
+            return allFilesSize;
         }
     }
 }

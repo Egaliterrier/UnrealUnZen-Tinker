@@ -102,11 +102,21 @@ namespace UEcastocLib
 
     public static class UTocDataParser
     {
+        public delegate void ParsingUtocStageDelegate(string stageName);
+
+        public static event ParsingUtocStageDelegate ParsingUtocStageEvent;
+
+        public delegate void FinishedParsingUtocDelegate();
+        public static event FinishedParsingUtocDelegate FinishedParsingUtoc;
+
         public static UTocData ParseUtocFile(string utocFile, byte[] aesKey)
         {
             var udata = new UTocData();
 
+            ParsingUtocStageEvent?.Invoke("Reading utoc file");
             byte[] utocData = File.ReadAllBytes(utocFile);
+
+            ParsingUtocStageEvent?.Invoke("Parsing utoc header");
             udata.Header = UTocDataExtensions.ParseUtocHeader(utocData);
 
             if (udata.IsEncrypted())
@@ -120,22 +130,27 @@ namespace UEcastocLib
 
             long ReadBefore = (long)udata.Header.HeaderSize;
 
+            ParsingUtocStageEvent?.Invoke("Parsing chunk IDs");
             byte[] chunkIdsData = utocData.Skip((int)ReadBefore).Take((int)udata.Header.EntryCount * 12).ToArray();
             var chunkIds = UTocDataExtensions.ParseChunkIds(chunkIdsData);
             ReadBefore += chunkIdsData.Length;
 
+            ParsingUtocStageEvent?.Invoke("Parsing offsets and lengths");
             byte[] OffsetAndLengthsData = utocData.Skip((int)ReadBefore).Take((int)udata.Header.EntryCount * 10).ToArray();
             var OffsetAndLength = UTocDataExtensions.ParseOffsetAndLength(OffsetAndLengthsData);
             ReadBefore += OffsetAndLengthsData.Length;
 
+            ParsingUtocStageEvent?.Invoke("Parsing hash seeds");
             byte[] PerfectHashSeedsData = utocData.Skip((int)ReadBefore).Take((int)udata.Header.TocChunkPerfectHashSeedsCount * 4).ToArray();
             var PerfectHashSeeds = UTocDataExtensions.ParseHashSeeds(PerfectHashSeedsData);
             ReadBefore += PerfectHashSeedsData.Length;
 
+            ParsingUtocStageEvent?.Invoke("Parsing compression blocks");
             byte[] compressionBlocksData = utocData.Skip((int)ReadBefore).Take((int)udata.Header.CompressedBlockEntrySize * (int)udata.Header.CompressedBlockEntryCount).ToArray();
             var customCompressionBlocks = UTocDataExtensions.ParseCompressionBlocks(compressionBlocksData);
             ReadBefore += compressionBlocksData.Length;
 
+            ParsingUtocStageEvent?.Invoke("Parsing compression methods");
             byte[] compressionMethodsData = utocData.Skip((int)ReadBefore).Take((int)udata.Header.CompressionMethodNameLength * (int)udata.Header.CompressionMethodNameCount).ToArray();
             udata.CompressionMethods = UTocDataExtensions.ParseCompressionMethods(compressionMethodsData, (int)udata.Header.CompressionMethodNameCount);
             ReadBefore += compressionMethodsData.Length;
@@ -146,6 +161,7 @@ namespace UEcastocLib
                 ReadBefore += 4 + hSize * 2 + 20 * udata.Header.CompressedBlockEntryCount;
             }
 
+            ParsingUtocStageEvent?.Invoke("Parsing directory index");
             string[] orderedPaths = { };
             if (udata.Header.ContainerFlags.HasFlag(EIoContainerFlags.IndexedContainerFlag))
             {
@@ -165,7 +181,7 @@ namespace UEcastocLib
                 }
             }
 
-
+            ParsingUtocStageEvent?.Invoke("Parsing chunks meta data");
             byte[] chunksMetaData = utocData.Skip((int)ReadBefore).Take((int)udata.Header.EntryCount * 33).ToArray();
             var chunksMeta = UTocDataExtensions.ParseChunkMeta(chunksMetaData);
             ReadBefore += chunksMetaData.Length;
@@ -202,6 +218,7 @@ namespace UEcastocLib
                 throw new Exception("Couldn't find dependencies");
             }
 
+            FinishedParsingUtoc?.Invoke();
             return udata;
         }
     }

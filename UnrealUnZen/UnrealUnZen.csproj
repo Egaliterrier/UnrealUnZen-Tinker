@@ -131,6 +131,12 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WorkInProgressForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="WorkInProgressForm.Designer.cs">
+      <DependentUpon>WorkInProgressForm.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="ToolResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ToolResources.Designer.cs</LastGenOutput>
@@ -148,6 +154,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="WorkInProgressForm.resx">
+      <DependentUpon>WorkInProgressForm.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
